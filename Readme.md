@@ -1,173 +1,214 @@
+
 # Automate Lead Processing from Landing Pages with Zoho CRM, Jira & Slack
 
-Landing Page Lead Intake via Webhook to Zoho CRM, Jira Task & Slack Alerts. This n8n workflow captures lead data from a landing‑page webhook, validates required fields, then processes the lead by creating a Zoho CRM lead, generating a Jira task, and notifying a Slack channel. If required fields are missing, it skips Zoho & Jira creation and instead notifies Slack so your team can handle it manually. :contentReference[oaicite:1]{index=1}
+This n8n workflow captures lead data from a **landing-page webhook**, validates required fields, and automatically processes the lead by:
+
+* Creating a **Zoho CRM Lead**
+* Generating a **Jira task**
+* Sending a **Slack notification**
+
+If mandatory fields are missing, the workflow **skips Zoho and Jira creation** and sends a Slack alert instead, allowing your team to handle the lead manually without polluting CRM data.
 
 ---
 
-## ⚡ Quick Start – 5‑Step Fast Implementation
+## ⚡ Quick Start – 5-Step Fast Implementation
 
-1. Import this workflow JSON into your n8n instance.
+1. Import the workflow JSON into your **n8n instance**.
 2. Configure credentials for:
-   - **Zoho CRM OAuth2**
-   - **Jira Cloud**
-   - **Slack OAuth2**
-3. Copy the webhook URL and connect it to your landing page form.
+
+   * **Zoho CRM (OAuth2)**
+   * **Jira Software Cloud**
+   * **Slack (OAuth2)**
+3. Copy the **Webhook URL** and connect it to your landing-page form.
 4. Ensure your form sends the following JSON fields:
-   - `first_name`
-   - `last_name`
-   - `company_name`
-   - `email`
-   - `phone`
-   - `title`
-   - `description`
-   - `referrer`
-5. Activate the workflow → send a test POST → verify Zoho, Jira & Slack outputs. :contentReference[oaicite:2]{index=2}
+
+   * `first_name`
+   * `last_name`
+   * `company_name`
+   * `email`
+   * `phone`
+   * `title`
+   * `description`
+   * `referrer`
+5. Activate the workflow → send a test POST → verify Zoho, Jira, and Slack outputs.
 
 ---
 
 ## 📌 What It Does
 
-This workflow automates lead intake:
+* Receives lead data via a **Webhook** from your landing page.
+* Validates required fields:
 
-- When the landing page sends JSON to the webhook, the workflow checks if `last_name` and `company_name` are present.
-- If **both fields exist**, it creates:
-  - a **Zoho CRM Lead**,
-  - a **Jira task** with the same data,
-  - a detailed **Slack message** that includes all lead information and the new Jira task ID.
-- If required fields are missing, it sends a **Slack notification** with available details so the team can intervene manually without incorrect CRM data entry. :contentReference[oaicite:3]{index=3}
+  * `last_name`
+  * `company_name`
+* **If both fields exist**:
+
+  * Creates a **Zoho CRM Lead**
+  * Creates a **Jira task** with lead details
+  * Sends a **Slack message** including the Jira task ID
+* **If fields are missing**:
+
+  * Skips Zoho & Jira
+  * Sends a **Slack alert** with available lead data for manual follow-up
+
+This ensures clean CRM data and immediate team visibility.
 
 ---
 
 ## 👥 Who’s It For
 
-- Marketing teams capturing landing page leads.
-- Sales teams using CRM and Jira for task tracking.
-- Internal teams that want Slack alerts for new leads.
-- Agencies and startups handling inbound lead flow.
-- Anyone requiring automated lead routing without manual work. :contentReference[oaicite:4]{index=4}
+* Marketing teams capturing landing-page leads
+* Sales teams using Zoho CRM and Jira
+* Teams relying on Slack for real-time alerts
+* Agencies and startups handling inbound leads
+* Anyone wanting automated lead routing with validation
 
 ---
 
 ## 🛠 Prerequisites
 
-- An **n8n instance** (cloud or self‑hosted).
-- Valid **Zoho CRM OAuth2 credentials**.
-- **Jira Software Cloud credentials**.
-- **Slack OAuth2 credentials**.
-- A landing page that sends **POST JSON payloads** with the required fields.
-- Payload must include:
-  - `first_name`
-  - `last_name`
-  - `company_name`
-  - `email`
-  - `phone`
-  - `title`
-  - `description`
-  - `referrer` :contentReference[oaicite:5]{index=5}
+* n8n (cloud or self-hosted)
+* **Zoho CRM OAuth2** credentials
+* **Jira Software Cloud** credentials
+* **Slack OAuth2** credentials
+* A landing page capable of sending **POST JSON payloads**
+
+### Required Payload Fields
+
+```json
+{
+  "first_name": "",
+  "last_name": "",
+  "company_name": "",
+  "email": "",
+  "phone": "",
+  "title": "",
+  "description": "",
+  "referrer": ""
+}
+```
 
 ---
 
-## 🛠 How to Use & Setup
+## ⚙️ How to Use & Set Up
 
 ### Step 1: Import Workflow
 
-Go to **n8n → Workflows → Import workflow JSON** and upload the file. :contentReference[oaicite:6]{index=6}
+Go to **n8n → Workflows → Import workflow** and upload the JSON file.
+
+---
 
 ### Step 2: Configure Credentials
 
-Add your credentials in the relevant nodes:
+Set credentials in the relevant nodes:
 
-- **Zoho CRM** — to create a lead.
-- **Jira Software Cloud** — to create a task.
-- **Slack** — to send messages (“Send a message” & “Send a message1”). :contentReference[oaicite:7]{index=7}
+* **Zoho CRM** → Create Lead
+* **Jira Software Cloud** → Create Issue
+* **Slack** → Send Message nodes
+
+---
 
 ### Step 3: Connect Webhook
 
-Copy the **Webhook URL** from the Webhook node and configure your landing page to send POST JSON to it. :contentReference[oaicite:8]{index=8}
+Copy the **Webhook URL** from the Webhook node and configure your landing page to send POST requests to it.
 
-### Step 4: Field Validation
+---
+
+### Step 4: Field Validation Logic
 
 The **If node** checks:
 
-- If `last_name` exists
-- And if `company_name` exists
+* `last_name` exists
+* `company_name` exists
 
-**If both exist:** CRM + Jira + Slack path  
-**If missing:** Slack‑only alert path :contentReference[oaicite:9]{index=9}
+| Condition   | Result                  |
+| ----------- | ----------------------- |
+| Both exist  | Zoho CRM + Jira + Slack |
+| Missing any | Slack alert only        |
 
-### Step 5: Test Workflow
+---
 
-Send sample JSON via your landing page or tools like Postman. Then check:
+### Step 5: Test the Workflow
 
-- Zoho CRM for new leads
-- Jira for new tasks
-- Slack for notifications :contentReference[oaicite:10]{index=10}
+Send sample data using:
+
+* Your landing page
+* Postman
+* cURL
+
+Verify:
+
+* Lead created in **Zoho CRM**
+* Task created in **Jira**
+* Message received in **Slack**
+
+---
 
 ### Step 6: Activate
 
-Enable the workflow after verifying everything works as expected. :contentReference[oaicite:11]{index=11}
+Enable the workflow after confirming everything works correctly.
 
 ---
 
-## ✨ How To Customize Nodes
+## ✨ Customization Options
 
 ### Webhook Node
 
-- Add or remove expected fields.
-- Modify payload structure to match your form. :contentReference[oaicite:12]{index=12}
+* Add or remove fields
+* Modify payload structure
 
 ### If Node
 
-- Add more validation rules.
-- Switch to OR logic if needed. :contentReference[oaicite:13]{index=13}
+* Add more validation rules
+* Switch to OR logic if required
 
-### Zoho CRM Lead Node
+### Zoho CRM Node
 
-- Add additional CRM fields.
-- Modify mapping to your CRM schema. :contentReference[oaicite:14]{index=14}
+* Map additional CRM fields
+* Align with your CRM schema
 
-### Jira Task Node
+### Jira Node
 
-- Change project, issue type, priority, or assignee.
-- Modify description templates. :contentReference[oaicite:15]{index=15}
+* Change project, issue type, priority, or assignee
+* Customize task description template
 
 ### Slack Nodes
 
-- Change notification channel.
-- Rewrite message content or formatting. :contentReference[oaicite:16]{index=16}
+* Change channel
+* Improve formatting or add mentions
 
 ---
 
-## ➕ Add‑Ons (Optional Enhancements)
+## ➕ Optional Enhancements
 
-- Email notification back to the lead.
-- Log leads in **Google Sheets** or a database.
-- Duplicate lead detection logic.
-- Lead scoring system.
-- Sync related records (Contacts, Accounts, etc.) to CRM. :contentReference[oaicite:17]{index=17}
+* Send confirmation emails to leads
+* Log leads in **Google Sheets** or a database
+* Add duplicate-lead detection
+* Implement lead scoring logic
+* Sync Contacts or Accounts in Zoho CRM
 
 ---
 
 ## 📈 Use Case Examples
 
-1. Marketing campaigns automatically push new leads into CRM & task tracking.
-2. Instant Slack alerts for inbound leads keep teams responsive.
-3. Sales enquiries generate Jira tasks for follow‑up.
-4. Data quality enforcement to avoid CRM pollution.
-5. Trigger a larger lead qualification workflow. :contentReference[oaicite:18]{index=18}
+1. Marketing campaigns auto-push leads into CRM and Jira
+2. Instant Slack alerts for faster response
+3. Sales inquiries automatically tracked as Jira tasks
+4. Prevent incomplete data from entering CRM
+5. Trigger advanced lead-qualification workflows
 
 ---
 
 ## 🧪 Troubleshooting Guide
 
-| **Issue**                    | **Possible Cause**                    | **Solution**                                      |
-| ---------------------------- | ------------------------------------- | ------------------------------------------------- | --------------------------------------- |
-| Webhook not triggered        | Wrong webhook URL or method           | Verify webhook URL & use POST                     |
-| Zoho lead not created        | Invalid credentials or missing fields | Reconnect Zoho credentials & check mappings       |
-| Jira task not created        | Invalid project/issue config          | Verify Jira project, type & permissions           |
-| Slack message not sent       | Invalid token or channel              | Re‑authenticate Slack & confirm channel           |
-| Workflow stops at If node    | Required field missing                | Ensure the landing page sends all required fields |
-| Slack message missing values | Payload fields incorrect              | Update payload to match expected JSON             | :contentReference[oaicite:19]{index=19} |
+| Issue                      | Possible Cause                        | Solution                                    |
+| -------------------------- | ------------------------------------- | ------------------------------------------- |
+| Webhook not triggered      | Wrong URL or method                   | Verify webhook URL and use POST             |
+| Zoho lead not created      | Invalid credentials or missing fields | Reconnect Zoho and verify mappings          |
+| Jira task not created      | Invalid project or issue type         | Check Jira project, issue type, permissions |
+| Slack message not sent     | Invalid token or channel              | Re-authenticate Slack and confirm channel   |
+| Workflow stops at If node  | Required field missing                | Ensure payload includes required fields     |
+| Slack message shows blanks | Field name mismatch                   | Align payload keys with workflow fields     |
 
 ---
 
@@ -175,11 +216,11 @@ Enable the workflow after verifying everything works as expected. :contentRefere
 
 If you need help with:
 
-- Workflow setup
-- Node customization
-- Adding enhanced automation logic
-- Integrating more CRMs or tools
+* Workflow setup
+* Advanced validation logic
+* CRM customization
+* Scaling or extending this automation
 
-Our n8n automation experts at **WeblineIndia** can help you build, optimize, and scale this automation to suit your exact needs. :contentReference[oaicite:20]{index=20}
+The **WeblineIndia** n8n automation team can help you design, optimize, and deploy workflows tailored to your business.
 
 Happy automating! 🚀
