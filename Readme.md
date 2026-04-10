@@ -13,7 +13,7 @@ If mandatory fields are missing, the workflow **skips Zoho and Jira creation** a
 
 ## ⚡ Quick Start – 5-Step Fast Implementation
 
-1. Import the workflow JSON into your **n8n instance**.
+1. Import the workflow JSON into your **[n8n account](https://n8n.partnerlinks.io/om1efg2qgvwi)**.
 2. Configure credentials for:
 
    * **Zoho CRM (OAuth2)**
